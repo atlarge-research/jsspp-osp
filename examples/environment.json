@@ -1,0 +1,124 @@
+{
+    "name": "Hello World Environment",
+    "description": "An example environment",
+    "environment": {
+        "datacenters": [
+            {
+                "id": 1,
+                "name": "europe-west4",
+                "location": "Eemshaven, Netherlands",
+                "operator": "Google",
+                "operational": {
+                    "scheduler": {
+                        "name": "stage-scheduler",
+                        "options": {
+                            "selection": "FIFO",
+                            "placement": "BEST-FIT"
+                        }
+                    }
+                },
+                "rooms": [
+                    {
+                        "type": "SERVER",
+                        "objects": [
+                            {
+                                "$base": "#/definitions/racks/default",
+                                "units": [
+                                    {
+                                        "id": 1,
+                                        "$base": "#/definitions/machines/default",
+                                        "$merge": [
+                                            "cpus"
+                                        ],
+                                        "cpus": [
+                                            {
+                                                "clock-rate": 38000000,
+                                                "cores": 5
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": 2,
+                                        "$base": "#/definitions/machines/default"
+                                    },
+                                    {
+                                        "id": 3,
+                                        "$base": "#/definitions/machines/default"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "events": [
+        {
+            "type": "MACHINE_STATE_CHANGE",
+            "time": 1,
+            "machine": 1,
+            "state": "MAINTENANCE"
+        },
+        {
+            "type": "MACHINE_STATE_CHANGE",
+            "time": 100,
+            "machine": 2,
+            "state": "FAILURE",
+            "cause": "Hard-disk drive failed"
+        },
+        {
+            "type": "DATACENTER_SCHEDULER_CHANGE",
+            "time": 300,
+            "datacenter": 1,
+            "scheduler": {
+                "name": "stage-scheduler",
+                "options": {
+                    "selection": "SRTF",
+                    "placement": "BEST-FIT"
+                }
+            }
+        }
+    ],
+    "definitions": {
+        "racks": {
+            "default": {
+                "type": "RACK",
+                "capacity": 42
+            }
+        },
+        "machines": {
+            "default": {
+                "type": "MACHINE",
+                "cpus": [
+                    {
+                        "clock-rate": 38000000,
+                        "cores": 8
+                    }
+                ],
+                "memory": [
+                    {
+                        "$base": "#/definitions/memory/default"
+                    }
+                ],
+                "storage": [
+                    {
+                        "$base": "#/definitions/storage/default"
+                    }
+                ]
+            }
+        },
+        "memory": {
+            "default": {
+                "speed": 60000,
+                "capacity": 1600
+            }
+        },
+        "storage": {
+            "default": {
+                "speed": 6000,
+                "capacity": 128000
+            }
+        }
+    }
+}

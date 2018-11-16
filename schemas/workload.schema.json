@@ -1,0 +1,293 @@
+{
+    "$id": "https://raw.githubusercontent.com/atlarge-research/jsspp-osp/v1/schemas/workload.schema.json",
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Workload Description",
+    "description": "A description of a workload trace for a cloud computing environment",
+    "type": "object",
+    "required": [],
+    "properties": {
+        "authors": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "date_start": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "date_end": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "description": {
+            "type": "string"
+        },
+        "domain": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string",
+            "description": "The name of the workload"
+        },
+        "schema_version": {
+            "type": "string"
+        },
+        "workflows": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/workflow"
+            }
+        }
+    },
+    "definitions": {
+        "data_transfer": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "source": {
+                    "type": "number"
+                },
+                "transfer_time": {
+                    "type": "string"
+                },
+                "destination": {
+                    "type": "string"
+                },
+                "size_unit": {
+                    "type": "string"
+                },
+                "events": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {}
+                },
+                "ts_submit": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "number"
+                }
+            }
+        },
+        "resource_usage": {
+            "required": [],
+            "type": "object",
+            "properties": {
+                "ncpu": {
+                    "type": "number"
+                },
+                "events": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {}
+                },
+                "proc_model": {
+                    "type": "string"
+                },
+                "time_assigned": {
+                    "type": "string"
+                },
+                "time_released": {
+                    "type": "string"
+                },
+                "bandwidth": {
+                    "type": "number"
+                },
+                "network": {
+                    "type": "string"
+                },
+                "memory": {
+                    "type": "string"
+                },
+                "os": {
+                    "type": "string"
+                },
+                "disk_space": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "details": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "cpu_vendor": {
+                            "type": "string"
+                        },
+                        "architecture": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "task": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "submission_site": {
+                    "type": "number"
+                },
+                "group_id": {
+                    "type": "number"
+                },
+                "user_id": {
+                    "type": "number"
+                },
+                "data_transfers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/data_transfer"
+                    }
+                },
+                "resources_used": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resource_usage"
+                    }
+                },
+                "ts_submit": {
+                    "type": "string"
+                },
+                "enables": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "wait_time": {
+                    "type": "number"
+                },
+                "workflow_id": {
+                    "type": "string"
+                },
+                "events": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {}
+                },
+                "depends_on": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "IDs of the dependencies of this task"
+                    }
+                },
+                "nfrs": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {}
+                },
+                "network_usage": {
+                    "type": "string"
+                },
+                "params": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {}
+                },
+                "memory_consumption": {
+                    "type": "number"
+                },
+                "runtime": {
+                    "type": "number"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "disk_space_usage": {
+                    "type": "string"
+                },
+                "energy_consumption": {
+                    "type": "number"
+                },
+                "core_count": {
+                    "type": "number"
+                },
+                "compute_granularity": {
+                    "type": "string"
+                },
+                "compute_count": {
+                    "type": "number"
+                }
+            }
+        },
+        "workflow": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "total_cpu": {
+                    "type": "number",
+                    "description": "Total CPU usage as a number in [0, 1]"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "tasks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/task"
+                    }
+                },
+                "total_network_usage": {
+                    "type": "string"
+                },
+                "critical_path_length": {
+                    "type": "number"
+                },
+                "ts_submit": {
+                    "type": "string"
+                },
+                "critical_path_task_count": {
+                    "type": "number"
+                },
+                "approx_max_concurrent_tasks": {
+                    "type": "number"
+                },
+                "task_count": {
+                    "type": "number"
+                },
+                "scheduler": {
+                    "type": "string"
+                },
+                "application_name": {
+                    "type": "string"
+                },
+                "total_energy_consumption": {
+                    "type": "string"
+                },
+                "total_memory_usage": {
+                    "type": "string"
+                },
+                "total_disk_space_usage": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "application_field": {
+                    "type": "string"
+                },
+                "nfrs": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {}
+                }
+            }
+        }
+    }
+}

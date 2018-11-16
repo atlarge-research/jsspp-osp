@@ -1,0 +1,493 @@
+{
+    "$id": "https://raw.githubusercontent.com/atlarge-research/jsspp-osp/v1/schemas/environment.schema.json",
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Environment Description",
+    "description": "A description of a cloud computing environment",
+    "type": "object",
+    "required": ["environment"],
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "The name of the environment"
+        },
+        "description": {
+            "type": "string",
+            "description": "A short textual description of the environment"
+        },
+        "environment": {
+            "type": "object",
+            "description": "A description of the initial environment",
+            "properties": {
+                "datacenters": {
+                    "type": "array",
+                    "items": { "$ref":  "#/definitions/datacenter" }
+                }
+            },
+            "required": ["datacenters"]
+        },
+        "events": {
+            "type": "array",
+            "description": "A list of events that occur in the environment",
+            "items": {
+                "$ref": "#/definitions/event"
+            },
+            "default": []
+        },
+        "schema_version": {
+            "type": "string"
+        },
+        "definitions": {
+            "type": "object",
+            "description": "An object to (partially) define commonly used entities"
+        }
+    },
+    "definitions": {
+        "id": {
+            "description": "A unique identifier for an entity",
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            ]
+        },
+        "reference": {
+            "type": "string",
+            "format": "uri-reference"
+        },
+        "base": {
+            "oneOf": [
+                { "$ref": "#/definitions/reference" },
+                {
+                    "type": "array",
+                    "items": { "$ref":  "#/definitions/reference" }
+                }
+            ]
+        },
+        "merge": {
+            "type": "array",
+            "description": "A list of keys that are merged one level deep",
+            "items": { "type": "string" }
+        },
+        "instant": {
+            "type": "number",
+            "description": "A single instantaneous point on the time-line",
+            "minimum": 0
+        },
+        "point": {
+            "type": "object",
+            "description": "A point on a 2-dimensional cartesian plane",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "The x coordinate of the point"
+                },
+                "y": {
+                    "type": "number",
+                    "description": "The y coordinate of the point"
+                }
+            },
+            "required": ["x", "y"]
+        },
+        "size": {
+            "type": "object",
+            "description": "The 2-dimensional size of an object",
+            "properties": {
+                "width": {
+                    "type": "number",
+                    "description": "The height of an object",
+                    "minimum": 0
+                },
+                "height": {
+                    "type": "number",
+                    "description": "The width of an object",
+                    "minimum": 0
+                }
+            },
+            "required": ["width", "height"]
+        },
+        "datacenter": {
+            "type": "object",
+            "description": "A description of a datacenter that is part of the cloud computing environment",
+            "properties": {
+                "$base": {
+                    "$ref": "#/definitions/base",
+                    "description": "A reference to a datacenter description to inherit"
+                },
+                "$merge": {
+                    "$ref": "#/definitions/merge"
+                },
+                "id": {
+                    "$ref": "#/definitions/id"
+                },
+                 "name": {
+                    "type": "string",
+                    "description": "The name of the datacenter"
+                },
+                "location": {
+                    "type": "string",
+                    "description": "The location of the datacenter"
+                },
+                "operator": {
+                    "type": "string",
+                    "description": "The operator of the datacenter"
+                },
+                "operational": {
+                    "type": "object",
+                    "description": "The operational details of a datacenter",
+                    "properties": {
+                        "scheduler": {
+                            "$ref": "#/definitions/scheduler"
+                        }
+                    }
+                },
+                "rooms": {
+                    "type": ["object", "array"],
+                    "description": "A list of rooms in the datacenter",
+                    "items": { "$ref":  "#/definitions/room" }
+                }
+            },
+            "required": ["rooms"]
+        },
+        "scheduler": {
+            "type": "object",
+            "description": "A scheduler in a datacenter",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the scheduler"
+                },
+                "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "A reference to a document describing the scheduler"
+                },
+                "options": {
+                    "type": "object",
+                    "description": "The options of the scheduler"
+                }
+            },
+            "required": ["name"]
+        },
+        "room": {
+            "type": "object",
+            "description": "A room in a datacenter",
+            "properties": {
+                "$base": {
+                    "$ref": "#/definitions/base",
+                    "description": "A reference to a room description to inherit"
+                },
+                "$merge": {
+                    "$ref": "#/definitions/merge"
+                },
+                "id": {
+                    "$ref": "#/definitions/id"
+                },
+                "type": { "enum": ["COOLING", "HALLWAY", "OFFICE", "POWER", "SERVER"] },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the room"
+                },
+                "objects": {
+                    "type": ["object", "array"],
+                    "description": "The objects in the room",
+                    "items": { "$ref": "#/definitions/room-object" }
+                },
+                "location": { "$ref": "#/definitions/point" },
+                "size": { "$ref":  "#/definitions/size" }
+            },
+            "oneOf": [
+                { "required": ["type"] },
+                { "required": ["$base"] }
+            ]
+        },
+        "room-object": {
+            "description": "An object in a datacenter room",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/id"
+                }
+            },
+            "oneOf": [
+                { "$ref": "#/definitions/rack" }
+            ]
+        },
+        "rack": {
+            "type": "object",
+            "description": "A rack in a datacenter room",
+            "properties": {
+                "$base": {
+                    "$ref": "#/definitions/base",
+                    "description": "A reference to a rack description to inherit"
+                },
+                "$merge": {
+                    "$ref": "#/definitions/merge"
+                },
+                "type": { "enum": ["RACK"] },
+                "name": {
+                    "type": "string",
+                    "description": "The name of a rack"
+                },
+                "capacity": {
+                    "type": "integer",
+                    "description": "The capacity of the rack in terms of units",
+                    "minimum": 0
+                },
+                "power-capacity": {
+                    "type": "number",
+                    "description": "The power capacity of the rack in Watts"
+                },
+                "units": {
+                    "type": ["object", "array"],
+                    "description": "A list of units installed in the rack",
+                    "items": { "$ref": "#/definitions/rack-unit" }
+                }
+            },
+            "oneOf": [
+                { "required": ["type"] },
+                { "required": ["$base"] }
+            ]
+        },
+        "rack-unit": {
+            "description": "A unit in a rack",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/id"
+                }
+            },
+            "oneOf": [
+                {
+                    "type": "object",
+                    "description": "An explict empty rack slot",
+                    "properties": {
+                        "type": {
+                            "enum": ["EMPTY"]
+                        }
+                    },
+                    "required": ["type"],
+                    "additionalProperties": false
+                },
+                { "$ref": "#/definitions/machine" }
+            ]
+        },
+        "machine": {
+            "type": "object",
+            "description": "A physical machine installed in a rack slot",
+            "properties": {
+                "$base": {
+                    "$ref": "#/definitions/base",
+                    "description": "A reference to a machine description to inherit"
+                },
+                "$merge": {
+                    "$ref": "#/definitions/merge"
+                },
+                "type": { "enum": ["MACHINE"] },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the machine"
+                },
+                "state": {
+                    "$ref": "#/definitions/machine-state",
+                    "default": "ACTIVE"
+                },
+                "cpus": {
+                    "type": "array",
+                    "description": "The CPUs installed in the machine",
+                    "items": { "$ref":  "#/definitions/pu"},
+                    "minItems": 1,
+                    "default": []
+                },
+                "gpus": {
+                    "type": "array",
+                    "description": "The GPUs installed in the machine",
+                    "items": { "$ref":  "#/definitions/pu"},
+                    "default": []
+                },
+                "memory": {
+                    "type": "array",
+                    "description": "The memory units installed in the machine",
+                    "items": { "$ref": "#/definitions/storage" },
+                    "default": []
+                },
+                "storage": {
+                    "type": "array",
+                    "description": "The storage units installed in the machine",
+                    "items": { "$ref": "#/definitions/storage" },
+                    "default": []
+                }
+            },
+            "oneOf": [
+                { "required": ["type", "cpus"] },
+                { "required": ["$base"] }
+            ]
+        },
+        "machine-state": {
+            "description": "The state of a machine in the datacenter",
+            "enum": ["ACTIVE", "HALT", "MAINTENANCE", "FAILURE"]
+        },
+        "pu": {
+            "type": "object",
+            "description": "A processing unit",
+            "properties": {
+                "$base": {
+                    "$ref": "#/definitions/base",
+                    "description": "A reference to a processing unit description to inherit"
+                },
+                "$merge": {
+                    "$ref": "#/definitions/merge"
+                },
+                "id": {
+                    "$ref": "#/definitions/id"
+                },
+                "manufacturer": {
+                    "type": "string",
+                    "description": "The manufacturer of the processing unit"
+                },
+                "family": {
+                    "type": "string",
+                    "description": "The family of the processing unit"
+                },
+                "generation": {
+                    "type": "string",
+                    "description": "The generation of the processing unit"
+                },
+                "model": {
+                    "type": "string",
+                    "description": "The model of the processing unit"
+                },
+                "clock-rate": {
+                    "type": "number",
+                    "description": "The clock rate of the processing unit in Hz",
+                    "exclusiveMinimum": 0
+                },
+                "cores": {
+                    "type": "integer",
+                    "description": "The amount of physical cores in the processing unit",
+                    "minimum": 1
+                },
+                "energy-consumption": {
+                    "type": "number",
+                    "description": "The energy consumption of the processing unit in Watts",
+                    "exclusiveMinimum": 0
+                }
+            },
+            "oneOf": [
+                { "required": ["clock-rate", "cores"] },
+                { "required": ["$base"] }
+            ]
+        },
+        "storage": {
+            "type": "object",
+            "description": "A storage unit",
+            "properties": {
+                "$base": {
+                    "$ref": "#/definitions/base",
+                    "description": "A reference to a storage unit description to inherit"
+                },
+                "$merge": {
+                    "$ref": "#/definitions/merge"
+                },
+                "id": {
+                    "$ref": "#/definitions/id"
+                },
+                "manufacturer": {
+                    "type": "string",
+                    "description": "The manufacturer of the unit"
+                },
+                "family": {
+                    "type": "string",
+                    "description": "The family of the unit"
+                },
+                "generation": {
+                    "type": "string",
+                    "description": "The generation of the unit"
+                },
+                "model": {
+                    "type": "string",
+                    "description": "The model of the unit"
+                },
+               "read-speed": {
+                    "type": "number",
+                    "description": "The read speed in MB/s",
+                    "exclusiveMinimum": 0
+                },
+                "write-speed": {
+                    "type": "number",
+                    "description": "The write speed in MB/s",
+                    "exclusiveMinimum": 0
+                },
+                "capacity": {
+                    "type": "integer",
+                    "description": "The capacity in MB",
+                    "exclusiveMinimum": 0
+                },
+                "energy-consumption": {
+                    "type": "number",
+                    "description": "The energy consumption of the unit in Watts",
+                    "exclusiveMinimum": 0
+                }
+            },
+            "oneOf": [
+                { "required": ["capacity"] },
+                { "required": ["$base"] }
+            ]
+        },
+        "event": {
+            "allOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "time": {
+                            "$ref": "#/definitions/instant",
+                            "description": "The instant at which the event occurs"
+                        },
+                        "attributes": {
+                            "type": "object",
+                            "description": "Arbitrary attributes of an event"
+                        }
+                    }
+                },
+                {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "type": { "enum": ["MACHINE_STATE_CHANGE"] },
+                                "machine": {
+                                    "$ref": "#/definitions/id",
+                                    "description": "The identifier of the machine this event occurred on"
+                                },
+                                "state": {
+                                    "$ref":  "#/definitions/machine-state",
+                                    "description": "The state the machine changed to"
+                                },
+                                "cause": {
+                                    "type": "string",
+                                    "description": "The cause of the state change"
+                                }
+                            },
+                            "required": ["type", "machine", "state"]
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "type": { "enum": ["DATACENTER_SCHEDULER_CHANGE"] },
+                                "datacenter": {
+                                    "$ref": "#/definitions/id",
+                                    "description": "The identifier of the datacenter this event occurred on"
+                                },
+                                "scheduler": {
+                                    "$ref": "#/definitions/scheduler"
+                                }
+                            },
+                            "required": ["type", "datacenter", "scheduler"]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

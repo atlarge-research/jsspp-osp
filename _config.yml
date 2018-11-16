@@ -1,0 +1,31 @@
+# Site settings
+title: JSSPP OSP
+description: >-
+    This page contains tooling and documentation of the formats used for
+    Open Scheduling Problems (OSPs) of the JSSPP workshop.
+header_pages:
+    - docs/installation.md
+    - docs/environment.md
+    - docs/workload.md
+    - docs/validation.md
+    - docs/submission.md
+
+# Build settings
+destination: site
+include:
+    - docs
+    - examples
+    - schemas
+exclude:
+    - jsspp
+    - site
+    - Gemfile
+    - Gemfile.lock
+    - MANIFEST.in
+    - Pipfile
+    - Pipfile.lock
+    - README.md
+    - setup.py
+    - requirements.txt
+markdown: kramdown
+theme: minima
